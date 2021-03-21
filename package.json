@@ -35,7 +35,7 @@
     }
   ],
   "devDependencies": {
-    "browserify": "16.5.0",
+    "browserify": "17.0.0",
     "wisp": "0.12.0"
   },
   "engines": {
@@ -53,9 +53,9 @@
     "repl": "make recompile && node bin/wisp"
   },
   "dependencies": {
-    "base64-encode": "~1.0.1",
-    "commander": ">=2.2.0",
-    "escodegen": "git://github.com/Constellation/escodegen.git#41fbbe5058849b5e082542c5cfce76c2d67792e6",
-    "minify": "3.0.5"
+    "base64-encode": "~2.0.1",
+    "commander": "~7.1.0",
+    "escodegen": "~2.0.0",
+    "minify": "~7.0.1"
   }
 }
