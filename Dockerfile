@@ -14,7 +14,7 @@ RUN case "${TARGETARCH}" in \
 	esac && \
 	chmod +x /wisp
 
-FROM scratch
+FROM gcr.io/distroless/base-debian12:debug
 
 LABEL org.opencontainers.image.source="https://github.com/rcarmo/wisp" \
 		org.opencontainers.image.title="wisp" \
