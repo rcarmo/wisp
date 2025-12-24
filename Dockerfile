@@ -1,39 +1,23 @@
-FROM oven/bun:latest AS builder
+FROM oven/bun:latest
 
 WORKDIR /app
 
-# Add build tools required by the Makefile
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-	apt-get install -y --no-install-recommends make ca-certificates && \
-	rm -rf /var/lib/apt/lists/*
-
-# Install dependencies for build
-COPY package.json bun.lock* ./
-RUN bun install --no-save --no-scripts
-
-# Copy source
-COPY . .
-
-# Build JS artifacts needed by the CLI and then compile a per-arch binary
-ARG TARGETOS
 ARG TARGETARCH
-RUN JS_RUNTIME=bun make node && \
-		mkdir -p /out && \
-		case "${TARGETARCH}" in \
-			amd64) bun build bin/wisp.js --compile --target=bun-linux-x64 --outfile /out/wisp ;; \
-			arm64) bun build bin/wisp.js --compile --target=bun-linux-arm64 --outfile /out/wisp ;; \
-			*) echo "Unsupported TARGETARCH=${TARGETARCH}" && exit 1 ;; \
-		esac
-
-FROM scratch
 
 LABEL org.opencontainers.image.source="https://github.com/rcarmo/wisp" \
-			org.opencontainers.image.title="wisp" \
-			org.opencontainers.image.description="Wisp CLI compiled with Bun" \
-			org.opencontainers.image.licenses="BSD-3-Clause"
+		org.opencontainers.image.title="wisp" \
+		org.opencontainers.image.description="Wisp CLI compiled with Bun from prebuilt JS" \
+		org.opencontainers.image.licenses="BSD-3-Clause"
 
-COPY --from=builder /out/wisp /wisp
+# Copy prebuilt JS artifacts (produced by the repo tooling) and build a per-arch binary
+COPY dist/ ./dist/
+
+RUN case "${TARGETARCH}" in \
+		amd64) bun build dist/wisp.js --compile --target=bun-linux-x64 --outfile /wisp ;; \
+		arm64) bun build dist/wisp.js --compile --target=bun-linux-arm64 --outfile /wisp ;; \
+		*) bun build dist/wisp.js --compile --outfile /wisp ;; \
+	esac && \
+	chmod +x /wisp
 
 ENTRYPOINT ["/wisp"]
 CMD ["--help"]
