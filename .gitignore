@@ -5,5 +5,10 @@ node_modules
 .*.swp
 workspace
 npm-debug.log
-/dist/
 package-lock.json
+*.tmp
+bun.lock
+bun.lockb
+.DS_Store
+dist/*.map
+dist/wisp-bun*

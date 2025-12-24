@@ -1,2 +1,4 @@
 src/drafts/*
 workspace
+bun.lockb
+bun.lock

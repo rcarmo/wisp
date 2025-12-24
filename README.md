@@ -29,6 +29,17 @@ A little Clojure-like LISP in JavaScript.
 
 	`./node_modules/.bin/wisp`
 
+**About this fork**
+
+- Uses Bun-first tooling (Makefile auto-detects Bun, falls back to Node) and Bun for minified browser builds.
+- Provides a self-contained Bun-compiled CLI binary: `make cli-bin` (host) or `make cli-bin-all` for `bun-linux-x64`, `bun-darwin-x64`, and `bun-darwin-arm64` outputs in `dist/`.
+
+**Bun**
+
+- Install dependencies with `bun install` (preferred) or `npm install`.
+- Build or test with `bun run build` / `bun run test`; the Makefile will fall back to Node if Bun is not available.
+- Force Node by setting `JS_RUNTIME=node` before running Make targets.
+
 [More info](./doc/more-info.md).
 
 Wisp is currently in maintenance mode. We're merging PRs but not actively writing new code.

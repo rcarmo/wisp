@@ -1,7 +1,7 @@
 (ns wisp.wisp
   "Wisp program that reads wisp code from stdin and prints
   compiled javascript code into stdout"
-  (:require [fs :refer [createReadStream]]
+  (:require [fs :refer [createReadStream writeFileSync]]
             [path :refer [basename dirname join resolve]]
             [module :refer [Module]]
             [commander]
@@ -37,8 +37,23 @@
         content (cond
                   (= channel :code) (:code output)
                   (= channel :expansion) (:expansion output)
-                  :else (JSON.stringify (get output channel) 2 2))]
-      (.write process.stdout (or content "nil"))
+                  :else (JSON.stringify (get output channel) 2 2))
+        target (:output options)]
+    (if target
+      (writeFileSync target (or content "nil") "utf8")
+      (.write process.stdout (or content "nil")))
+    (if (:error output) (throw (.-error output)))))
+
+(defn eval-string
+  [source options]
+  (let [output (compile source (conj {:print :code} options))
+        code (:code output)
+    module (Module. "(eval)")
+    paths ((.-_nodeModulePaths Module) (.cwd process))]
+  (set! (.-filename module) "(eval)")
+  (set! (.-paths module) paths)
+    (let [compile-fn (.-_compile module)]
+      (.call compile-fn module code "(eval)"))
     (if (:error output) (throw (.-error output)))))
 
 (defn with-stream-content
@@ -67,9 +82,14 @@
 
 (defn parse-params
   [params]
-  (let [options (-> commander
+  (let [program (-> (.-program commander)
+                    (.name "wisp")
                     (.version version)
                     (.usage "[options] <file ...>")
+                    (.option "-e, --eval <code>"
+                             "evaluate inline Wisp code")
+                    (.option "-o, --output <file>"
+                             "write compiled output to file (compile modes)")
                     (.option "-r, --run"
                              "compile and execute the file (same as wisp path/to/file.wisp)")
                     (.option "-c, --compile"
@@ -86,17 +106,20 @@
                              "uri input will be associated with in source maps")
                     (.option "--output-uri <uri>"
                              "uri output will be associated with in source maps")
-                    (.parse params))]
-    (conj {:no-map (not (:map options))}
+                    (.parse params))
+        options (.opts program)]
+    (conj {:args (.-args program)
+           :no-map (not (:map options))}
           options)))
 
 (defn main
   []
   (let [options (parse-params process.argv)
         path (aget options.args 0)]
-    (cond options.run (run path)
-          (not process.stdin.isTTY) (compile-stdin options)
-          options.interactive (start-repl)
-          options.compile (compile-file path options)
-          path (run path)
-          :else (start-repl))))
+            (cond options.eval (eval-string options.eval options)
+              options.run (run path)
+              (not process.stdin.isTTY) (compile-stdin options)
+              options.interactive (start-repl)
+              options.compile (compile-file path options)
+              path (run path)
+              :else (start-repl))))

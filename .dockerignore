@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+bun.lock
+bun.lockb
+/dist/
+workspace
+*.swp
+*.tmp
+.DS_Store
