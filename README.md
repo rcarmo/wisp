@@ -1,9 +1,17 @@
-A little Clojure-like LISP in JavaScript.
+A little Clojure-like LISP in JavaScript — this fork focuses on portable, standalone binaries and a minimal Docker image while keeping browser usage intact.
 
-<!-- interactive demo -->
+**Quick start: standalone binaries**
+- Prebuilt Bun-compiled CLIs live in `dist/` (e.g., `wisp-bun-linux-x64`).
+- Run directly: `./dist/wisp-bun-linux-x64 --help`.
+- Build your own: `make cli-bin` (host arch) or `make cli-bin-all` for `bun-linux-x64`, `bun-linux-arm64`, `bun-darwin-x64`, `bun-darwin-arm64`.
 
+**Quick start: Docker image**
+- Scratch-based image published to GHCR (built from the Bun-compiled binary).
+- Run: `docker run --rm ghcr.io/rcarmo/wisp:latest --help`.
+- Use for compilation: `docker run --rm -v "$PWD:/src" -w /src ghcr.io/rcarmo/wisp:latest myscript.wisp`.
+
+**Browser usage (unchanged)**
 1. Read about the [language essentials & documentation](./doc/language-essentials.md).
-
 2. Drop [wisp.min.js](https://github.com/Gozala/wisp/raw/gh-pages/dist/wisp.min.js) into your HTML code:
 
 ```html
@@ -17,29 +25,15 @@ A little Clojure-like LISP in JavaScript.
 <script type="application/wisp" src="my-script.wisp"></script>
 ```
 
-3. Or install the binary with npm:
-
-	`npm install wisp`
-
-4. Compile wisp code to native JS just like CoffeeScript:
-
-	`node_modules/.bin/wisp < my-script.wisp > my-script.js`
-
-5. Fire up a REPL to explore the language:
-
-	`./node_modules/.bin/wisp`
+**Build from source**
+- Install deps: `bun install` (preferred) or `npm install`.
+- Build everything: `bun run build` (Makefile auto-detects Bun, falls back to Node).
+- Tests: `bun run test`.
+- Force Node: `JS_RUNTIME=node make all`.
 
 **About this fork**
-
-- Uses Bun-first tooling (Makefile auto-detects Bun, falls back to Node) and Bun for minified browser builds.
-- Provides a self-contained Bun-compiled CLI binary: `make cli-bin` (host) or `make cli-bin-all` for `bun-linux-x64`, `bun-darwin-x64`, and `bun-darwin-arm64` outputs in `dist/`.
-
-**Bun**
-
-- Install dependencies with `bun install` (preferred) or `npm install`.
-- Build or test with `bun run build` / `bun run test`; the Makefile will fall back to Node if Bun is not available.
-- Force Node by setting `JS_RUNTIME=node` before running Make targets.
-
-[More info](./doc/more-info.md).
+- Bun-first tooling for faster local builds and minified browser bundles.
+- Self-contained Bun-compiled CLI binaries and a scratch-based Docker image targeting multiple architectures.
+- Source: https://github.com/rcarmo/wisp
 
 Wisp is currently in maintenance mode. We're merging PRs but not actively writing new code.

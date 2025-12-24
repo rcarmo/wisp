@@ -2,6 +2,11 @@ FROM oven/bun:latest AS builder
 
 WORKDIR /app
 
+# Add build tools required by the Makefile
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends make ca-certificates && \
+	rm -rf /var/lib/apt/lists/*
+
 # Install dependencies for build
 COPY package.json bun.lock* ./
 RUN bun install --no-save
