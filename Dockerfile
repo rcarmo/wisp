@@ -18,13 +18,14 @@ RUN bun install --no-save --ignore-scripts
 COPY . .
 RUN JS_RUNTIME=bun make node && \
 	case "${TARGETARCH}" in \
-		amd64) bun build bin/wisp.js --compile --target=bun-linux-x64 --outfile /wisp ;; \
+ 		amd64) bun build bin/wisp.js --compile --target=bun-linux-x64 --outfile /wisp ;; \
 		arm64) bun build bin/wisp.js --compile --target=bun-linux-arm64 --outfile /wisp ;; \
 		*) bun build bin/wisp.js --compile --outfile /wisp ;; \
 	esac && \
+	strip /wisp 2>/dev/null || true && \
 	chmod +x /wisp
 
-FROM gcr.io/distroless/base-debian12:debug
+FROM gcr.io/distroless/base-debian12
 
 LABEL org.opencontainers.image.source="https://github.com/rcarmo/wisp" \
 		org.opencontainers.image.title="wisp" \
