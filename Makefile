@@ -9,7 +9,7 @@ BROWSERIFY = $(JS_RUNTIME) $(BROWSERIFY_BIN)
 WISP_CURRENT = $(JS_RUNTIME) $(WISP_CURRENT_BIN)
 FLAGS =
 INSTALL_MESSAGE = "You need to run 'bun install' (or 'npm install') to install build dependencies."
-CLEAN_TARGETS = engine backend *.js *.js~ browserify.js dist/*.map dist/*.js~
+CLEAN_TARGETS = engine backend *.js *.js~ browserify.js dist/*.map dist/*.js~ node_modules
 BUILD_DEPS = $(BROWSERIFY_BIN) $(WISP_BIN)
 # set make's source file search path
 vpath % src
