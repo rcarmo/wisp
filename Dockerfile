@@ -12,7 +12,7 @@ RUN apt-get update && \
 
 # Install deps without triggering prepare scripts (we drive builds explicitly)
 COPY package.json bun.lock* ./
-RUN bun install --no-save --no-scripts
+RUN bun install --no-save --ignore-scripts
 
 # Copy source and build node-target JS, then compile the CLI binary per arch
 COPY . .
